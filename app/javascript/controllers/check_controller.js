@@ -1,0 +1,27 @@
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="check"
+export default class extends Controller {
+  connect() {
+    console.log("checking conection")
+  }
+  active(event) {
+    console.log("CheckController active")
+    const id = event.target.dataset.id
+    const csrfToken = document.querySelector("[name='csrf-token']").content
+
+    fetch(`/tasks/${id}/active`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors', // no-cors, *cors, same-origin
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+      },
+      body: JSON.stringify({ completed: event.target.checked })
+    })
+    .then(response => response.text())
+    .then(Turbo.renderStreamMessage)
+  }
+}
